@@ -1,96 +1,43 @@
-import java.util.Scanner;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public class CryptoUtil
 {
-    public static void main(String[] args)
+    private static final String ALGORITHM = "AES/GCM/NoPadding";
+    private static final int GCM_IV_LENGTH = 12;
+    private static final int GCM_TAG_LENGTH = 128;
+
+    public static byte[] generateIV()
     {
-        Scanner scanner = new Scanner(System.in);
-        boolean running = true;
-
-        System.out.println("=== Password Manager ===");
-
-        while (running)
-        {
-            System.out.println("\n1. Add Password");
-            System.out.println("2. Delete Password");
-            System.out.println("3. Search Password");
-            System.out.println("4. Edit Password");
-            System.out.println("5. Exit");
-            System.out.print("Choose an option: ");
-
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            switch (choice)
-            {
-                case 1:
-                    addPassword(scanner);
-                    break;
-                case 2:
-                    deletePassword(scanner);
-                    break;
-                case 3:
-                    searchPassword(scanner);
-                    break;
-                case 4:
-                    editPassword(scanner);
-                    break;
-                case 5:
-                    running = false;
-                    System.out.println("Goodbye!");
-                    break;
-                default:
-                    System.out.println("Invalid option, try again.");
-            }
-        }
-        scanner.close();
+        byte[] iv = new byte[GCM_IV_LENGTH];
+        new SecureRandom().nextBytes(iv);
+        return iv;
     }
 
-    private static void addPassword(Scanner scanner)
+    public static byte[] encrypt(String plaintext, SecretKey key, byte[] iv) throws Exception
     {
-        System.out.print("Enter site name: ");
-        String site = scanner.nextLine();
-
-        System.out.print("Enter username for this site: ");
-        String username = scanner.nextLine();
-
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        String strength = PasswordStrengthChecker.checkStrength(password);
-        System.out.println("Password strength: " + strength);
-
-        // Next step: encrypt password + save to database
-        // We'll wire this to CryptoUtil + CredentialDAO next
-        System.out.println("(TODO: encrypt and save to database)");
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+        return cipher.doFinal(plaintext.getBytes("UTF-8"));
     }
 
-    private static void deletePassword(Scanner scanner)
-    {
-        System.out.print("Enter site name to delete: ");
-        String site = scanner.nextLine();
-        // TODO: delete from database
-        System.out.println("(TODO: delete from database)");
+    public static String decrypt(byte[] ciphertext, SecretKey key, byte[] iv) throws Exception {
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+        cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        byte[] decrypted = cipher.doFinal(ciphertext);
+        return new String(decrypted, "UTF-8");
     }
 
-    private static void searchPassword(Scanner scanner)
-    {
-        System.out.print("Enter site name to search: ");
-        String site = scanner.nextLine();
-        // TODO: fetch from database, decrypt, display
-        System.out.println("(TODO: fetch and decrypt from database)");
+    public static String toBase64(byte[] data) {
+        return Base64.getEncoder().encodeToString(data);
     }
 
-    private static void editPassword(Scanner scanner)
-    {
-        System.out.print("Enter site name to edit: ");
-        String site = scanner.nextLine();
-        System.out.print("Enter new password: ");
-        String newPassword = scanner.nextLine();
-
-        String strength = PasswordStrengthChecker.checkStrength(newPassword);
-        System.out.println("New password strength: " + strength);
-
-        // TODO: encrypt new password, update database
-        System.out.println("(TODO: update database)");
+    public static byte[] fromBase64(String data) {
+        return Base64.getDecoder().decode(data);
     }
 }
