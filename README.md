@@ -1,78 +1,69 @@
 # 🔐 Password Manager (Java + MySQL)
 
-![Java](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge&logo=openjdk)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
+<div align="center">
+
+![Java](https://img.shields.io/badge/Java-17+-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![JDBC](https://img.shields.io/badge/JDBC-Connector-success?style=for-the-badge)
 ![AES-256-GCM](https://img.shields.io/badge/AES--256-GCM-red?style=for-the-badge)
 ![PBKDF2](https://img.shields.io/badge/PBKDF2-HmacSHA256-purple?style=for-the-badge)
-![BCrypt](https://img.shields.io/badge/BCrypt-Secure%20Hashing-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-A secure **Password Manager** built with **Java** and **MySQL** that protects user credentials using **AES-256-GCM encryption**, **PBKDF2 key derivation**, and **BCrypt password hashing**. The application allows users to securely register, log in, and manage their passwords while ensuring that sensitive information is never stored in plain text.
+*A secure console-based password manager built using Java, MySQL, AES-256-GCM encryption, and PBKDF2 key derivation.*
+
+</div>
 
 ---
 
 # 📖 Overview
 
-This project demonstrates the practical implementation of modern cryptographic techniques in Java. Every stored password is encrypted using **AES-256-GCM**, while the user's master password is securely hashed with **BCrypt**. Encryption keys are derived using **PBKDF2WithHmacSHA256**, providing strong protection against brute-force attacks.
+This Password Manager is a secure Java application that stores website credentials in an encrypted format inside a MySQL database. Every password is encrypted using **AES-256-GCM**, while the encryption key is derived securely using **PBKDF2WithHmacSHA256**.
 
-The application follows secure software development practices and implements complete CRUD functionality for password management.
+The project demonstrates secure password storage techniques, Java Cryptography Architecture (JCA), JDBC database connectivity, and CRUD operations.
 
 ---
 
 # ✨ Features
 
-## ✅ Authentication
+## 🔐 Security
 
-- 👤 User Registration
-- 🔐 Secure User Login
-- 🔑 BCrypt Password Hashing
-- 🚪 Logout Support
-
----
-
-## ✅ Password Management
-
-- ➕ Add New Credential
-- 🔍 Search Saved Credential
-- ✏️ Edit Existing Credential
-- 🗑️ Delete Credential
-- 📋 View All Saved Credentials
+- ✅ AES-256-GCM Encryption
+- ✅ PBKDF2WithHmacSHA256 Key Derivation
+- ✅ Random Initialization Vector (IV)
+- ✅ Password Strength Checker
+- ✅ Passwords Stored in Encrypted Format
 
 ---
 
-## ✅ Security
+## 📂 Password Management
 
-- 🔒 AES-256-GCM Encryption
-- 🔑 PBKDF2WithHmacSHA256 Key Derivation
-- 🛡️ BCrypt Password Hashing
-- 🎲 Unique IV Generated for Every Password
-- 💪 Password Strength Checker
-- 🔐 Master Password Never Stored in Plain Text
+- ➕ Add Password
+- 🔍 Search Password
+- ✏️ Edit Password
+- 🗑️ Delete Password
 
 ---
 
-## ✅ Database
+## 🗄️ Database
 
-- 🗄️ MySQL Database
-- 🔌 JDBC Connectivity
-- 📂 DAO Architecture
-- 🔄 Complete CRUD Operations
+- ✅ MySQL Database
+- ✅ JDBC Integration
+- ✅ DAO Pattern
+- ✅ Complete CRUD Operations
 
 ---
 
 # 🛠️ Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| ☕ Java (JDK 17+) | Core Programming Language |
+| Technology | Description |
+|------------|-------------|
+| ☕ Java (JDK 17+) | Programming Language |
 | 🗄️ MySQL | Database |
 | 🔌 JDBC | Database Connectivity |
-| 🔐 AES-256-GCM | Password Encryption |
-| 🔑 PBKDF2WithHmacSHA256 | Encryption Key Derivation |
-| 🛡️ BCrypt | Password Hashing |
-| 🔒 Java Cryptography Architecture (JCA) | Cryptographic Operations |
+| 🔐 AES-256-GCM | Encryption Algorithm |
+| 🔑 PBKDF2WithHmacSHA256 | Key Derivation |
+| 🛡️ Java Cryptography Architecture | Cryptographic Operations |
 
 ---
 
@@ -89,94 +80,62 @@ PasswordManager/
 │   ├── DatabaseConnection.java
 │   ├── CryptoUtil.java
 │   ├── KeyDerivation.java
-│   ├── PasswordHasher.java
 │   ├── PasswordStrengthChecker.java
 │   ├── CredentialDAO.java
-│   ├── UserDAO.java
-│   └── UserSession.java
+│   └── Credential.java
 │
 └── lib/
-    ├── mysql-connector-j.jar
-    └── jbcrypt.jar
+    └── mysql-connector-j.jar
 ```
 
 ---
 
 # 🗄️ Database Schema
 
-## Users Table
-
-```sql
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-## Credentials Table
-
 ```sql
 CREATE TABLE credentials (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
     site_name VARCHAR(100) NOT NULL,
     site_username VARCHAR(100) NOT NULL,
     encrypted_password TEXT NOT NULL,
     iv VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 ---
 
-# 🚀 Getting Started
+# 🚀 Installation
 
-## 📋 Prerequisites
-
-- Java JDK 17+
-- MySQL Server
-- MySQL Connector/J
-- jBCrypt Library
-- IntelliJ IDEA / Eclipse / VS Code
-
----
-
-## Installation
-
-### 1️⃣ Clone Repository
+### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/PasswordManager.git
+git clone https://github.com/ahsanidreesnns8-ai/PasswordManager.git
 ```
 
-### 2️⃣ Open Project
+### Open Project
 
-Import the project into your preferred Java IDE.
+Open the project in IntelliJ IDEA, Eclipse, or VS Code.
 
-### 3️⃣ Configure Database
+### Configure Database
 
-Update your MySQL credentials in:
+Update your MySQL username and password inside:
 
 ```text
 DatabaseConnection.java
 ```
 
-### 4️⃣ Create Database
+### Create Database
 
-Run:
+Run the SQL script:
 
 ```text
 sql/schema.sql
 ```
 
-### 5️⃣ Execute
+### Run
 
-Run:
+Execute:
 
 ```text
 Main.java
@@ -191,17 +150,13 @@ Main.java
       PASSWORD MANAGER
 =============================
 
-1. Register
-2. Login
-3. Add Password
-4. Search Password
-5. Edit Password
-6. Delete Password
-7. View All Passwords
-8. Logout
-9. Exit
+1. Add Password
+2. Delete Password
+3. Search Password
+4. Edit Password
+5. Exit
 
-Enter your choice:
+Choose an option:
 ```
 
 ---
@@ -210,45 +165,35 @@ Enter your choice:
 
 ## 🔐 AES-256-GCM Encryption
 
-- Encrypts every stored credential.
+- Encrypts every password before storing it.
 - Provides confidentiality and authentication.
-- Detects any tampering with encrypted data.
+- Detects unauthorized modifications.
 
 ---
 
 ## 🔑 PBKDF2WithHmacSHA256
 
-- Derives strong encryption keys.
-- Protects against brute-force attacks.
-- Uses thousands of hashing iterations.
+- Derives a secure encryption key.
+- Makes brute-force attacks significantly harder.
+- Uses password-based cryptographic key derivation.
 
 ---
 
-## 🛡️ BCrypt Password Hashing
+## 🎲 Random IV
 
-- Securely hashes user passwords.
-- Automatically generates random salt.
-- Passwords are never stored in plain text.
-
----
-
-## 🎲 Random Initialization Vector (IV)
-
-- Unique IV generated for every password.
-- Prevents identical ciphertext.
-- Stored safely with encrypted credentials.
+Every encrypted password receives a unique Initialization Vector (IV), ensuring identical passwords never produce identical ciphertext.
 
 ---
 
 ## 💪 Password Strength Checker
 
-Passwords are evaluated using:
+Passwords are evaluated based on:
 
-- ✅ Length
-- ✅ Uppercase Letters
-- ✅ Lowercase Letters
-- ✅ Numbers
-- ✅ Special Characters
+- ✔ Password Length
+- ✔ Uppercase Letters
+- ✔ Lowercase Letters
+- ✔ Numbers
+- ✔ Special Characters
 
 Ratings:
 
@@ -258,72 +203,77 @@ Ratings:
 
 ---
 
-# 📌 Project Features
+# 📸 Sample Database
 
-| Feature | Status |
-|----------|--------|
-| Project Setup | ✅ Completed |
-| Database Design | ✅ Completed |
-| JDBC Integration | ✅ Completed |
-| User Registration | ✅ Completed |
-| User Login | ✅ Completed |
-| BCrypt Password Hashing | ✅ Completed |
-| PBKDF2 Key Derivation | ✅ Completed |
-| AES-256-GCM Encryption | ✅ Completed |
-| Password Strength Checker | ✅ Completed |
-| Add Password | ✅ Completed |
-| Search Password | ✅ Completed |
-| Edit Password | ✅ Completed |
-| Delete Password | ✅ Completed |
-| View All Passwords | ✅ Completed |
-| Session Management | ✅ Completed |
+The application stores encrypted credentials inside MySQL.
+
+| ID | Site | Username | Password |
+|----|------|----------|----------|
+| 2 | LMS | 2025CYS112@student.uet.edu.pk | 🔒 AES Encrypted |
+| 3 | Facebook | ahsanidrees10 | 🔒 AES Encrypted |
+
+Each password is stored together with its unique IV, making every encrypted record unique and secure.
 
 ---
 
-# 📚 Concepts Demonstrated
+# 📌 Implemented Features
+
+| Feature | Status |
+|----------|--------|
+| Project Setup | ✅ |
+| JDBC Connection | ✅ |
+| MySQL Integration | ✅ |
+| AES-256-GCM Encryption | ✅ |
+| PBKDF2 Key Derivation | ✅ |
+| Password Strength Checker | ✅ |
+| Add Password | ✅ |
+| Search Password | ✅ |
+| Edit Password | ✅ |
+| Delete Password | ✅ |
+
+---
+
+# 📚 Learning Outcomes
+
+This project demonstrates:
 
 - ☕ Java Programming
-- 🧩 Object-Oriented Programming (OOP)
+- 🧩 Object-Oriented Programming
 - 🔐 AES-256-GCM Encryption
 - 🔑 PBKDF2 Key Derivation
-- 🛡️ BCrypt Password Hashing
 - 🔒 Java Cryptography Architecture (JCA)
-- 🗄️ MySQL Database Design
+- 🗄️ MySQL Database
 - 🔌 JDBC Connectivity
 - 📂 DAO Design Pattern
-- 🔐 Secure Password Storage
 - 🛠️ CRUD Operations
 
 ---
 
-# 🎯 Future Enhancements
+# 🚀 Future Improvements
 
-- 🖥️ Java Swing / JavaFX GUI
-- ☁️ Cloud Synchronization
-- 📱 Mobile Application
-- 🔑 Two-Factor Authentication (2FA)
-- 📄 Import & Export Passwords
-- 🔔 Password Expiry Notifications
-- 🌙 Dark Theme
-- ☁️ Secure Backup & Restore
-- 👥 Multi-Device Synchronization
+- 👤 User Authentication
+- 🔑 BCrypt Password Hashing
+- 🎲 Random Password Generator
+- 🖥️ JavaFX GUI
+- ☁️ Cloud Backup
+- 📱 Mobile Version
+- 🔔 Password Expiry Reminder
+- 🔐 Two-Factor Authentication (2FA)
 
 ---
 
 # 👨‍💻 Author
 
-## 🌟 M. Ahsan Idrees
+## **M. Ahsan Idrees**
 
-🎓 **Cybersecurity Student** — University of Engineering & Technology (UET), Lahore
+🎓 Cybersecurity Student — **University of Engineering & Technology (UET), Lahore**
 
-💻 Passionate about **Cybersecurity**, **Java Development**, **Python**, **C#**, **Web Development**, and **Database Systems**.
+### 💻 Skills
 
-### 🛠️ Skills
-
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![C Sharp](https://img.shields.io/badge/C%23-68217A?style=for-the-badge&logo=csharp&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![C Sharp](https://img.shields.io/badge/C%23-68217A?style=flat-square&logo=csharp&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
 
 
 ### 🌐 Connect With Me
@@ -334,9 +284,13 @@ Ratings:
 
 ---
 
-# ⭐ Support
+<div align="center">
 
-If you found this project useful, consider giving it a **⭐ Star** on GitHub. Your support motivates me to continue building and sharing open-source projects.
+## ⭐ If you found this project helpful, consider giving it a Star ⭐ on GitHub.
+
+### Thank you for visiting this repository! 🚀
+
+</div>
 
 ---
 
@@ -344,5 +298,4 @@ If you found this project useful, consider giving it a **⭐ Star** on GitHub. Y
 
 This project is licensed under the **MIT License**.
 
-Feel free to use, modify, and distribute this project for educational and personal purposes.
-````
+Feel free to use, modify, and distribute it for educational and personal learning purposes.
