@@ -1,4 +1,3 @@
-````md
 # 🔐 Password Manager (Java + MySQL)
 
 ![Java](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge&logo=openjdk)
