@@ -84,16 +84,49 @@ public class Main
     {
         System.out.print("Enter site name to delete: ");
         String site = scanner.nextLine();
-        // TODO: delete from database
-        System.out.println("(TODO: delete from database)");
+
+        boolean deleted = CredentialDAO.deleteCredential(site);
+
+        if (deleted) {
+            System.out.println("Deleted successfully!");
+        } else {
+            System.out.println("No entry found with that site name.");
+        }
     }
 
     private static void searchPassword(Scanner scanner)
     {
         System.out.print("Enter site name to search: ");
         String site = scanner.nextLine();
-        // TODO: fetch from database, decrypt, display
-        System.out.println("(TODO: fetch and decrypt from database)");
+
+        String[] result = CredentialDAO.getCredential(site);
+
+        if (result == null)
+        {
+            System.out.println("No entry found with that site name.");
+            return;
+        }
+
+        String username = result[0];
+        String encryptedBase64 = result[1];
+        String ivBase64 = result[2];
+
+        try
+        {
+            SecretKey key = getTemporaryKey();
+            byte[] encryptedBytes = CryptoUtil.fromBase64(encryptedBase64);
+            byte[] iv = CryptoUtil.fromBase64(ivBase64);
+
+            String decryptedPassword = CryptoUtil.decrypt(encryptedBytes, key, iv);
+
+            System.out.println("Site: " + site);
+            System.out.println("Username: " + username);
+            System.out.println("Password: " + decryptedPassword);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error while decrypting: " + e.getMessage());
+        }
     }
 
     private static void editPassword(Scanner scanner)
@@ -106,8 +139,30 @@ public class Main
         String strength = PasswordStrengthChecker.checkStrength(newPassword);
         System.out.println("New password strength: " + strength);
 
-        // TODO: encrypt new password, update database
-        System.out.println("(TODO: update database)");
+        try
+        {
+            SecretKey key = getTemporaryKey();
+            byte[] iv = CryptoUtil.generateIV();
+            byte[] encryptedBytes = CryptoUtil.encrypt(newPassword, key, iv);
+
+            String encryptedBase64 = CryptoUtil.toBase64(encryptedBytes);
+            String ivBase64 = CryptoUtil.toBase64(iv);
+
+            boolean updated = CredentialDAO.updateCredential(site, encryptedBase64, ivBase64);
+
+            if (updated)
+            {
+                System.out.println("Password updated successfully!");
+            }
+            else
+            {
+                System.out.println("No entry found with that site name.");
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error while encrypting/updating: " + e.getMessage());
+        }
     }
 
     private static SecretKey getTemporaryKey() throws Exception
