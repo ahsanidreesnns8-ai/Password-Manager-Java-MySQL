@@ -1,48 +1,65 @@
+````md
 # 🔐 Password Manager (Java + MySQL)
 
 ![Java](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge&logo=openjdk)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql)
 ![JDBC](https://img.shields.io/badge/JDBC-Connector-success?style=for-the-badge)
-![AES-256](https://img.shields.io/badge/AES--256-GCM-red?style=for-the-badge)
+![AES-256-GCM](https://img.shields.io/badge/AES--256-GCM-red?style=for-the-badge)
 ![PBKDF2](https://img.shields.io/badge/PBKDF2-HmacSHA256-purple?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=for-the-badge)
-![License](https://img.shields.io/badge/License-Educational-green?style=for-the-badge)
+![BCrypt](https://img.shields.io/badge/BCrypt-Secure%20Hashing-brightgreen?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-A secure console-based **Password Manager** built with **Java** and **MySQL** that encrypts user credentials using **AES-256-GCM** and derives encryption keys with **PBKDF2**. The application securely stores login credentials while ensuring sensitive information is never stored in plain text.
-
-> ⚠️ **Project Status:** Under Development
+A secure **Password Manager** built with **Java** and **MySQL** that protects user credentials using **AES-256-GCM encryption**, **PBKDF2 key derivation**, and **BCrypt password hashing**. The application allows users to securely register, log in, and manage their passwords while ensuring that sensitive information is never stored in plain text.
 
 ---
 
 # 📖 Overview
 
-This project demonstrates the implementation of modern cryptographic techniques in Java. It securely stores website credentials using **AES-256-GCM encryption**, while **PBKDF2WithHmacSHA256** derives a strong encryption key from the user's master password. The application follows secure coding practices such as authenticated encryption, unique IV generation, and password strength validation.
+This project demonstrates the practical implementation of modern cryptographic techniques in Java. Every stored password is encrypted using **AES-256-GCM**, while the user's master password is securely hashed with **BCrypt**. Encryption keys are derived using **PBKDF2WithHmacSHA256**, providing strong protection against brute-force attacks.
+
+The application follows secure software development practices and implements complete CRUD functionality for password management.
 
 ---
 
 # ✨ Features
 
-## ✅ Implemented
-
-- 🔐 AES-256-GCM Encryption
-- 🔑 PBKDF2 Key Derivation
-- 💪 Password Strength Checker
-- ➕ Add New Credentials
-- 🗄️ MySQL Database Integration
-- 🔌 JDBC Connectivity
-- 🎯 Console-Based Interface
-- 🎲 Unique IV for Every Password
-- 📂 DAO-Based Project Structure
-
-## 🚧 In Progress
+## ✅ Authentication
 
 - 👤 User Registration
-- 🔓 User Login
-- 🔍 Search Credentials
-- ✏️ Edit Credentials
-- 🗑️ Delete Credentials
-- 🎲 Password Generator
-- 🔑 Session-Based Key Management
+- 🔐 Secure User Login
+- 🔑 BCrypt Password Hashing
+- 🚪 Logout Support
+
+---
+
+## ✅ Password Management
+
+- ➕ Add New Credential
+- 🔍 Search Saved Credential
+- ✏️ Edit Existing Credential
+- 🗑️ Delete Credential
+- 📋 View All Saved Credentials
+
+---
+
+## ✅ Security
+
+- 🔒 AES-256-GCM Encryption
+- 🔑 PBKDF2WithHmacSHA256 Key Derivation
+- 🛡️ BCrypt Password Hashing
+- 🎲 Unique IV Generated for Every Password
+- 💪 Password Strength Checker
+- 🔐 Master Password Never Stored in Plain Text
+
+---
+
+## ✅ Database
+
+- 🗄️ MySQL Database
+- 🔌 JDBC Connectivity
+- 📂 DAO Architecture
+- 🔄 Complete CRUD Operations
 
 ---
 
@@ -50,12 +67,13 @@ This project demonstrates the implementation of modern cryptographic techniques 
 
 | Technology | Purpose |
 |------------|---------|
-| ☕ Java (JDK 17+) | Core Application |
+| ☕ Java (JDK 17+) | Core Programming Language |
 | 🗄️ MySQL | Database |
 | 🔌 JDBC | Database Connectivity |
 | 🔐 AES-256-GCM | Password Encryption |
-| 🔑 PBKDF2WithHmacSHA256 | Key Derivation |
-| 🛡️ Java Cryptography Architecture | Cryptographic Operations |
+| 🔑 PBKDF2WithHmacSHA256 | Encryption Key Derivation |
+| 🛡️ BCrypt | Password Hashing |
+| 🔒 Java Cryptography Architecture (JCA) | Cryptographic Operations |
 
 ---
 
@@ -75,40 +93,42 @@ PasswordManager/
 │   ├── PasswordHasher.java
 │   ├── PasswordStrengthChecker.java
 │   ├── CredentialDAO.java
-│   └── UserDAO.java
+│   ├── UserDAO.java
+│   └── UserSession.java
 │
 └── lib/
-    └── mysql-connector-j-x.x.x.jar
+    ├── mysql-connector-j.jar
+    └── jbcrypt.jar
 ```
 
 ---
 
 # 🗄️ Database Schema
 
-## 👤 Users Table
+## Users Table
 
 ```sql
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    salt VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-## 🔐 Credentials Table
+## Credentials Table
 
 ```sql
 CREATE TABLE credentials (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT NOT NULL,
     site_name VARCHAR(100) NOT NULL,
     site_username VARCHAR(100) NOT NULL,
     encrypted_password TEXT NOT NULL,
     iv VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
         ON DELETE CASCADE
 );
 ```
@@ -119,12 +139,15 @@ CREATE TABLE credentials (
 
 ## 📋 Prerequisites
 
-- ☕ Java JDK 17+
-- 🗄️ MySQL Server
-- 🔌 MySQL Connector/J
-- 💻 IntelliJ IDEA / Eclipse / VS Code
+- Java JDK 17+
+- MySQL Server
+- MySQL Connector/J
+- jBCrypt Library
+- IntelliJ IDEA / Eclipse / VS Code
 
-## ⚙️ Installation
+---
+
+## Installation
 
 ### 1️⃣ Clone Repository
 
@@ -132,31 +155,31 @@ CREATE TABLE credentials (
 git clone https://github.com/your-username/PasswordManager.git
 ```
 
-### 2️⃣ Open the Project
+### 2️⃣ Open Project
 
-Open the project in your preferred Java IDE.
+Import the project into your preferred Java IDE.
 
 ### 3️⃣ Configure Database
 
-Update your MySQL username and password in:
+Update your MySQL credentials in:
 
-```
+```text
 DatabaseConnection.java
 ```
 
-### 4️⃣ Create Tables
+### 4️⃣ Create Database
 
 Run:
 
-```
+```text
 sql/schema.sql
 ```
 
-### 5️⃣ Start the Application
+### 5️⃣ Execute
 
 Run:
 
-```
+```text
 Main.java
 ```
 
@@ -169,46 +192,64 @@ Main.java
       PASSWORD MANAGER
 =============================
 
-1. Add Password
-2. Search Password
-3. Edit Password
-4. Delete Password
-5. Exit
+1. Register
+2. Login
+3. Add Password
+4. Search Password
+5. Edit Password
+6. Delete Password
+7. View All Passwords
+8. Logout
+9. Exit
 
 Enter your choice:
 ```
 
 ---
 
-# 🔒 Security Features
+# 🔒 Security Implementation
 
-### 🔐 AES-256-GCM Encryption
+## 🔐 AES-256-GCM Encryption
 
-- Encrypts every stored password
-- Provides confidentiality and integrity
-- Protects against data tampering
+- Encrypts every stored credential.
+- Provides confidentiality and authentication.
+- Detects any tampering with encrypted data.
 
-### 🔑 PBKDF2 Key Derivation
+---
 
-- Uses PBKDF2WithHmacSHA256
-- Derives secure encryption keys
-- Makes brute-force attacks significantly harder
+## 🔑 PBKDF2WithHmacSHA256
 
-### 🎲 Random Initialization Vector (IV)
+- Derives strong encryption keys.
+- Protects against brute-force attacks.
+- Uses thousands of hashing iterations.
 
-- New IV for every credential
-- Prevents identical ciphertext
-- Stored safely alongside encrypted data
+---
 
-### 💪 Password Strength Checker
+## 🛡️ BCrypt Password Hashing
 
-Evaluates passwords based on:
+- Securely hashes user passwords.
+- Automatically generates random salt.
+- Passwords are never stored in plain text.
 
-- ✔ Length
-- ✔ Uppercase Letters
-- ✔ Lowercase Letters
-- ✔ Numbers
-- ✔ Special Characters
+---
+
+## 🎲 Random Initialization Vector (IV)
+
+- Unique IV generated for every password.
+- Prevents identical ciphertext.
+- Stored safely with encrypted credentials.
+
+---
+
+## 💪 Password Strength Checker
+
+Passwords are evaluated using:
+
+- ✅ Length
+- ✅ Uppercase Letters
+- ✅ Lowercase Letters
+- ✅ Numbers
+- ✅ Special Characters
 
 Ratings:
 
@@ -218,46 +259,55 @@ Ratings:
 
 ---
 
-# 📌 Roadmap
+# 📌 Project Features
 
 | Feature | Status |
 |----------|--------|
-| ✅ Project Setup | Complete |
-| ✅ Database Design | Complete |
-| ✅ JDBC Connection | Complete |
-| ✅ AES Encryption | Complete |
-| ✅ PBKDF2 Key Derivation | Complete |
-| ✅ Password Strength Checker | Complete |
-| ✅ Add Password | Complete |
-| 🚧 User Registration | In Progress |
-| 🚧 User Login | In Progress |
-| 🚧 Search Password | Planned |
-| 🚧 Edit Password | Planned |
-| 🚧 Delete Password | Planned |
-| 🚧 Password Generator | Planned |
-| 🚧 Session Key Management | Planned |
+| Project Setup | ✅ Completed |
+| Database Design | ✅ Completed |
+| JDBC Integration | ✅ Completed |
+| User Registration | ✅ Completed |
+| User Login | ✅ Completed |
+| BCrypt Password Hashing | ✅ Completed |
+| PBKDF2 Key Derivation | ✅ Completed |
+| AES-256-GCM Encryption | ✅ Completed |
+| Password Strength Checker | ✅ Completed |
+| Add Password | ✅ Completed |
+| Search Password | ✅ Completed |
+| Edit Password | ✅ Completed |
+| Delete Password | ✅ Completed |
+| View All Passwords | ✅ Completed |
+| Session Management | ✅ Completed |
 
 ---
 
-# 📚 Learning Objectives
-
-This project demonstrates practical implementation of:
+# 📚 Concepts Demonstrated
 
 - ☕ Java Programming
 - 🧩 Object-Oriented Programming (OOP)
-- 🔐 AES Encryption
+- 🔐 AES-256-GCM Encryption
 - 🔑 PBKDF2 Key Derivation
-- 🛡️ Java Cryptography Architecture (JCA)
+- 🛡️ BCrypt Password Hashing
+- 🔒 Java Cryptography Architecture (JCA)
 - 🗄️ MySQL Database Design
 - 🔌 JDBC Connectivity
 - 📂 DAO Design Pattern
-- 🔒 Secure Password Storage
+- 🔐 Secure Password Storage
+- 🛠️ CRUD Operations
 
 ---
 
-# ⚠️ Disclaimer
+# 🎯 Future Enhancements
 
-This project is developed for educational purposes to demonstrate secure password management concepts. While it implements several security best practices, production-grade password managers require additional protections such as secure memory handling, hardware-backed keystores, secure backups, and multi-factor authentication.
+- 🖥️ Java Swing / JavaFX GUI
+- ☁️ Cloud Synchronization
+- 📱 Mobile Application
+- 🔑 Two-Factor Authentication (2FA)
+- 📄 Import & Export Passwords
+- 🔔 Password Expiry Notifications
+- 🌙 Dark Theme
+- ☁️ Secure Backup & Restore
+- 👥 Multi-Device Synchronization
 
 ---
 
@@ -265,9 +315,9 @@ This project is developed for educational purposes to demonstrate secure passwor
 
 ## 🌟 M. Ahsan Idrees
 
-🎓 Cybersecurity Student — University of Engineering & Technology (UET), Lahore
+🎓 **Cybersecurity Student** — University of Engineering & Technology (UET), Lahore
 
-💻 Passionate about Cybersecurity, Java Development, Python, C#, Web Development, and Database Systems.
+💻 Passionate about **Cybersecurity**, **Java Development**, **Python**, **C#**, **Web Development**, and **Database Systems**.
 
 ### 🛠️ Skills
 
@@ -277,7 +327,7 @@ This project is developed for educational purposes to demonstrate secure passwor
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 
-## 🌐 Connect With Me
+### 🌐 Connect With Me
 
 [![GitHub](https://img.shields.io/badge/GitHub-ahsanidreesnns8--ai-181717?style=for-the-badge&logo=github)](https://github.com/ahsanidreesnns8-ai)
 
@@ -287,10 +337,13 @@ This project is developed for educational purposes to demonstrate secure passwor
 
 # ⭐ Support
 
-If you found this project helpful, please consider giving it a ⭐ on GitHub. It motivates me to build more open-source projects.
+If you found this project useful, consider giving it a **⭐ Star** on GitHub. Your support motivates me to continue building and sharing open-source projects.
 
 ---
 
 # 📄 License
 
-This project is licensed for educational and learning purposes.
+This project is licensed under the **MIT License**.
+
+Feel free to use, modify, and distribute this project for educational and personal purposes.
+````
